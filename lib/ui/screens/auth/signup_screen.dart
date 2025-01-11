@@ -1,4 +1,6 @@
 import 'package:contact_manager/domain/services/user_authentication.dart';
+import 'package:contact_manager/ui/screens/main/home_screen.dart';
+import 'package:contact_manager/util/user_credential_util.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/custom_buttons.dart';
@@ -16,6 +18,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final UserAuthService _authService = UserAuthService();
+  final UserCredentialUtil _credentialUtil = UserCredentialUtil();
 
   bool _isProgressing = false;
   bool _isPasswordVisible = false; // For toggling password visibility
@@ -40,6 +43,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       try {
         final userCredentials = await _authService.signup(email, password);
+        await userCredentials.user?.updateDisplayName(name);
+        await _credentialUtil.saveCredentials(email, password);
+
         // Clear fields and show success message
         _nameController.clear();
         _emailController.clear();
@@ -48,9 +54,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Registration successful!')),
         );
-
         // Redirect to another screen or reset form
         // Navigator.pushReplacement(...);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (builder) => HomeScreen()),
+        );
       } on FirebaseAuthException catch (e) {
         _updateErrorMessage(
             e.message ?? 'An error occurred. Please try again.');
@@ -81,8 +90,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 Text(
                   'Create an Account',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
@@ -120,7 +129,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     labelText: 'Password',
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() {
@@ -161,4 +172,3 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 }
-

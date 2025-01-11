@@ -1,7 +1,6 @@
 import 'package:contact_manager/ui/screens/auth/login_screen.dart';
 import 'package:contact_manager/ui/screens/auth/signup_screen.dart';
 import 'package:flutter/material.dart';
-
 import '../../widgets/custom_buttons.dart';
 
 class WelcomeScreen extends StatelessWidget {

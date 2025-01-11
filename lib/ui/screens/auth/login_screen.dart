@@ -1,7 +1,9 @@
 import 'package:contact_manager/domain/services/user_authentication.dart';
+import 'package:contact_manager/util/user_credential_util.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/custom_buttons.dart';
+import '../main/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final UserAuthService _authService = UserAuthService();
+  final UserCredentialUtil _credentialUtil = UserCredentialUtil();
 
   bool _isPasswordVisible = false;
   bool _isProgressing = false;
@@ -38,6 +41,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
       try {
         await _authService.login(email: email, password: password);
+        await _credentialUtil.saveCredentials(email, password);
+        await _credentialUtil.saveCredentials(email, password);
         _emailController.clear();
         _passwordController.clear();
 
@@ -45,12 +50,10 @@ class _LoginScreenState extends State<LoginScreen> {
           const SnackBar(content: Text('Login successful!')),
         );
 
-        // Navigate to the home screen
-        // Replace `HomeScreen` with the screen you want to navigate to
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const HomeScreen()),
-        // );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (builder) => HomeScreen()),
+        );
       } on FirebaseAuthException catch (e) {
         _updateErrorMessage(
             e.message ?? 'An error occurred. Please try again.');
