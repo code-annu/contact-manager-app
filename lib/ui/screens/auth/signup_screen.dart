@@ -1,5 +1,5 @@
 import 'package:contact_manager/domain/services/user_authentication.dart';
-import 'package:contact_manager/ui/screens/main/home_screen.dart';
+import 'package:contact_manager/ui/screens/main/main_screen.dart';
 import 'package:contact_manager/util/user_credential_util.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -54,11 +54,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Registration successful!')),
         );
-        // Redirect to another screen or reset form
+
         // Navigator.pushReplacement(...);
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (builder) => HomeScreen()),
+          MaterialPageRoute(builder: (builder) => MainScreen()),
+          (route) => false,
         );
       } on FirebaseAuthException catch (e) {
         _updateErrorMessage(

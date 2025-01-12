@@ -3,7 +3,7 @@ import 'package:contact_manager/util/user_credential_util.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/custom_buttons.dart';
-import '../main/home_screen.dart';
+import '../main/main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -50,9 +50,10 @@ class _LoginScreenState extends State<LoginScreen> {
           const SnackBar(content: Text('Login successful!')),
         );
 
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (builder) => HomeScreen()),
+          MaterialPageRoute(builder: (builder) => MainScreen()),
+          (route) => false,
         );
       } on FirebaseAuthException catch (e) {
         _updateErrorMessage(
