@@ -2,7 +2,7 @@
     <application
         android:label="contact_manager"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/ic_app">
         <activity
             android:name=".MainActivity"
             android:exported="true"
