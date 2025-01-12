@@ -1,16 +1,14 @@
 import 'package:contact_manager/theme.dart';
-import 'package:contact_manager/ui/screens/auth/signup_screen.dart';
-import 'package:contact_manager/ui/screens/auth/welcome_screen.dart';
 import 'package:contact_manager/ui/screens/splash/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp();
   runApp(const MyApp());
 }
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -50,8 +48,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       title: 'Contact Manager',
       theme: _brightness == Brightness.light ? theme.light() : theme.dark(),
       debugShowCheckedModeBanner: false,
-      home:  SplashScreen(),
+      home: SplashScreen(),
     );
   }
 }
-

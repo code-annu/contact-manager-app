@@ -1,5 +1,5 @@
-import 'package:contact_manager/domain/entities/contact_entity.dart';
 import 'package:contact_manager/domain/services/contact_service.dart';
+import 'package:contact_manager/ui/screens/contact/create_contact_screen.dart';
 import 'package:contact_manager/ui/screens/main/profile_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -19,8 +19,8 @@ class _MainScreenState extends State<MainScreen> {
 
   // List of screens for each bottom navigation item
   final List<Widget> _screens = [
-    const ContactsScreen(),
-    const FavoritesScreen(),
+    ContactsScreen(),
+    FavoritesScreen(),
     ProfileScreen(),
   ];
 
@@ -30,16 +30,6 @@ class _MainScreenState extends State<MainScreen> {
     'Favorites',
     'Profile',
   ];
-
-  void createNewContact() async {
-    ContactEntity contactEntity = ContactEntity(
-      userid: '',
-      name: "Anurag",
-      phoneNumber: '9696348678',
-      email: 'code.annu@gmail.com',
-    );
-    await contactService.createNewContact(contactEntity);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +41,11 @@ class _MainScreenState extends State<MainScreen> {
       floatingActionButton: _currentIndex == 0
           ? FloatingActionButton(
               onPressed: () {
-                createNewContact();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (builder) => CreateContactScreen()),
+                );
               },
               tooltip: 'Add Contact',
               child: const Icon(Icons.add),
