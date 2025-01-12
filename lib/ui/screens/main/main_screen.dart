@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'contact_screen.dart';
 import 'favorite_screen.dart';
 
+// Theme management notifier
+ValueNotifier<ThemeMode> currentThemeNotifier = ValueNotifier(ThemeMode.light);
+
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  MainScreen({super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -36,20 +39,38 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_titles[_currentIndex]),
+        actions: [
+          IconButton(
+            icon: ValueListenableBuilder<ThemeMode>(
+              valueListenable: currentThemeNotifier,
+              builder: (context, themeMode, child) {
+                return Icon(
+                  themeMode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode,
+                );
+              },
+            ),
+            onPressed: () {
+              // Toggle theme
+              currentThemeNotifier.value = currentThemeNotifier.value == ThemeMode.dark
+                  ? ThemeMode.light
+                  : ThemeMode.dark;
+            },
+          ),
+        ],
       ),
       body: _screens[_currentIndex],
       floatingActionButton: _currentIndex == 0
           ? FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (builder) => CreateContactScreen()),
-                );
-              },
-              tooltip: 'Add Contact',
-              child: const Icon(Icons.add),
-            )
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (builder) => CreateContactScreen()),
+          );
+        },
+        tooltip: 'Add Contact',
+        child: const Icon(Icons.add),
+      )
           : null, // Show FAB only on the "Contacts" tab
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -76,3 +97,4 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+

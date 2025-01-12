@@ -1,4 +1,5 @@
 import 'package:contact_manager/theme.dart';
+import 'package:contact_manager/ui/screens/main/main_screen.dart';
 import 'package:contact_manager/ui/screens/splash/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,7 @@ import 'package:flutter/material.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -44,11 +45,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     MaterialTheme theme = MaterialTheme();
 
-    return MaterialApp(
-      title: 'Contact Manager',
-      theme: _brightness == Brightness.light ? theme.light() : theme.dark(),
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: currentThemeNotifier,
+      builder: (context, themeMode, child) {
+        return MaterialApp(
+          title: 'Contact Manager',
+          theme: theme.light(),
+          darkTheme: theme.dark(),
+          themeMode: themeMode,
+          debugShowCheckedModeBanner: false,
+          home: SplashScreen(),
+        );
+      },
     );
   }
 }

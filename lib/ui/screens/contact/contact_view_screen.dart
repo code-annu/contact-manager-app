@@ -36,7 +36,7 @@ class _ContactViewScreenState extends State<ContactViewScreen> {
                   ? Icons.favorite
                   : Icons.favorite_border,
               color: widget.contact.isFavorite
-                  ? Theme.of(context).primaryColor
+                  ? Theme.of(context).colorScheme.secondary
                   : null,
             ),
             tooltip: 'Toggle Favorite',
@@ -45,8 +45,9 @@ class _ContactViewScreenState extends State<ContactViewScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.delete),
+            icon: Icon(Icons.delete),
             tooltip: 'Delete Contact',
+            color: Theme.of(context).colorScheme.error,
             onPressed: () {
               _confirmDeleteContact(context);
             },

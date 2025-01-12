@@ -17,6 +17,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
   List<ContactEntity>? _filteredContacts;
   String _searchQuery = '';
+  String _sortOption = 'Name'; // Default sort option
 
   @override
   void initState() {
@@ -36,16 +37,23 @@ class _ContactsScreenState extends State<ContactsScreen> {
   }
 
   List<ContactEntity> _filterContacts(List<ContactEntity> contacts) {
-    if (_searchQuery.isEmpty) return contacts;
-    return contacts
-        .where((contact) =>
-            contact.name.toLowerCase().contains(_searchQuery) ||
-            contact.phoneNumber.contains(_searchQuery))
-        .toList();
-  }
+    List<ContactEntity> filtered = contacts;
+    if (_searchQuery.isNotEmpty) {
+      filtered = filtered
+          .where((contact) =>
+              contact.name.toLowerCase().contains(_searchQuery) ||
+              contact.phoneNumber.contains(_searchQuery))
+          .toList();
+    }
 
-  List<ContactEntity> _getFavoriteContacts(List<ContactEntity> contacts) {
-    return contacts.where((contact) => contact.isFavorite).toList();
+    if (_sortOption == 'Name') {
+      filtered
+          .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    } else if (_sortOption == 'Date Added') {
+      filtered.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    }
+
+    return filtered;
   }
 
   @override
@@ -53,58 +61,40 @@ class _ContactsScreenState extends State<ContactsScreen> {
     return Column(
       children: [
         _buildSearchBar(),
-        StreamBuilder<List<ContactEntity>>(
-          stream: _contactsStream,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(
-                height: 100,
-                child: Center(child: CircularProgressIndicator()),
-              );
-            } else if (snapshot.hasError) {
-              return const SizedBox(
-                height: 100,
-                child: Center(child: Text('Error loading contacts')),
-              );
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const SizedBox(); // Skip if no contacts
-            }
-
-            final favoriteContacts = _getFavoriteContacts(snapshot.data!);
-
-            if (favoriteContacts.isEmpty) {
-              return const SizedBox(); // Skip if no favorites
-            }
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                  child: Text(
-                    'Favorites',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'All Contacts',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-                _buildFavoritesSection(favoriteContacts),
-              ],
-            );
-          },
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-          child: Align(
-            alignment: Alignment.centerLeft, // Aligns the text to the left
-            child: Text(
-              'All Contacts',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
               ),
-            ),
+              DropdownButton<String>(
+                value: _sortOption,
+                onChanged: (String? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      _sortOption = newValue;
+                    });
+                  }
+                },
+                items: ['Name', 'Date Added']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
           ),
         ),
         Expanded(
@@ -172,54 +162,6 @@ class _ContactsScreenState extends State<ContactsScreen> {
             borderRadius: BorderRadius.circular(8.0),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildFavoritesSection(List<ContactEntity> favoriteContacts) {
-    return Container(
-      height: 100,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: favoriteContacts.length,
-        itemBuilder: (context, index) {
-          final contact = favoriteContacts[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ContactViewScreen(contact: contact),
-                ),
-              );
-            },
-            child: Container(
-              width: 80,
-              margin: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 30,
-                    child: Text(
-                      contact.name.isNotEmpty
-                          ? contact.name[0].toUpperCase()
-                          : '?',
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    contact.name,
-                    style: const TextStyle(fontSize: 12),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
       ),
     );
   }

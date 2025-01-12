@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
         // Navigate to HomeScreen if login is successful
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const MainScreen()),
+          MaterialPageRoute(builder: (context) => MainScreen()),
         );
       } else {
         // Navigate to WelcomeScreen if no credentials are found
